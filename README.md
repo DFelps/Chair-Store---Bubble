@@ -235,6 +235,9 @@ Routes implemented:
 -   /account/orders/:id
 -   /admin/products
 -   /admin/orders
+-   /login
+-   /signup
+-   /reset-password
 
 Screenshot: ![Pages Structure
 Screenshot](./screenshots/pages-structure.png)
