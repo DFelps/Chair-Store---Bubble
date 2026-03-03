@@ -228,7 +228,7 @@ Screenshot: ![Privacy Rules Screenshot](./screenshots/privacy-rules.png)
 Routes implemented:
 
 -   /shop
--   /p/:slug
+-   /product/:slug
 -   /cart
 -   /checkout
 -   /account/orders
