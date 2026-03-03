@@ -1,32 +1,37 @@
 # Chair Store - Functional Architecture (Bubble)
 
-## 1. Project Overview
+------------------------------------------------------------------------
+
+# 1. Project Overview
 
 This project is a functional chair e-commerce built in Bubble.
 
-The focus here is not UI or design polish. The goal is to build a
-technically solid structure with:
+The focus is architecture, security, and consistency --- not UI design.
 
--   clean data modeling
--   proper privacy rules
--   consistent workflows
--   safe order and stock handling
+The goal is to simulate a production-ready structure with:
 
-This is meant to simulate a real-world production structure.
+-   Clean data modeling
+-   Proper privacy rules
+-   Safe order and stock handling
+-   Organized workflows
 
-### Roles
+------------------------------------------------------------------------
+
+## Roles
 
 -   guest
 -   customer
 -   admin
 -   staff
 
-### V1 Scope
+------------------------------------------------------------------------
 
-For V1, the app includes:
+## V1 Scope
+
+The first version includes:
 
 -   Product catalog
--   Product detail page with variants
+-   Product detail with variants
 -   Cart system
 -   Checkout flow
 -   Order creation
@@ -35,235 +40,253 @@ For V1, the app includes:
 
 ------------------------------------------------------------------------
 
-## 2. Option Sets
+# 2. Option Sets
 
-### UserRole
+## UserRole
 
--   admin
--   staff
--   customer
+admin\
+staff\
+customer
 
-### OrderStatus
+## OrderStatus
 
--   pending_payment
--   paid
--   packing
--   shipped
--   delivered
--   canceled
--   refunded
+pending_payment\
+paid\
+packing\
+shipped\
+delivered\
+canceled\
+refunded
 
-### CouponType (optional)
+## CouponType (optional)
 
--   percent
--   fixed
-
-------------------------------------------------------------------------
-
-## 3. Data Model
-
-Core structure of the application.
-
-### Product
-
-  Field         Type            Notes
-  ------------- --------------- ---------------------
-  title         text            Product name
-  slug          text            Unique identifier
-  description   text            Basic description
-  images        list of image   
-  is_active     yes/no          Controls visibility
-  featured      yes/no          Optional
-
-### Variant
-
-Each product can have multiple variants (SKU-level control).
-
-  Field              Type      Notes
-  ------------------ --------- ----------------------------------
-  product            Product   Relation
-  sku                text      Unique
-  name               text      Example: Black / Wood / With arm
-  price              number    
-  compare_at_price   number    Optional
-  stock_qty          number    Simple stock control (V1)
-  is_active          yes/no    
-
-### Cart
-
-  Field   Type               Notes
-  ------- ------------------ ----------------
-  owner   User               Logged-in user
-  items   list of CartItem   
-
-### CartItem
-
-  Field                 Type      Notes
-  --------------------- --------- ---------------------------------
-  cart                  Cart      
-  variant               Variant   
-  qty                   number    
-  unit_price_snapshot   number    Locks price at add-to-cart time
-
-### Address
-
-  Field    Type   Notes
-  -------- ------ -------------------
-  owner    User   
-  label    text   Home, Office, etc
-  zip      text   
-  street   text   
-  number   text   
-  city     text   
-  state    text   
-
-### Order
-
-Orders use snapshot logic to avoid historical inconsistencies.
-
-  Field                       Type                Notes
-  --------------------------- ------------------- -----------------------
-  order_number                text                Generated in workflow
-  customer                    User                
-  status                      OrderStatus         
-  items                       list of OrderItem   
-  shipping_address_snapshot   text                Address snapshot
-  subtotal                    number              Snapshot
-  discount                    number              Optional
-  shipping                    number              Optional
-  total                       number              Snapshot
-  payment_provider            text                stripe / manual
-  payment_intent_id           text                Optional
-  created_at                  date                
-
-### OrderItem
-
-Order items store full snapshots to preserve pricing history.
-
-  Field                 Type     Notes
-  --------------------- -------- ---------------------
-  order                 Order    
-  variant_snapshot      text     SKU + name snapshot
-  unit_price_snapshot   number   
-  qty                   number   
-  subtotal              number   
+percent\
+fixed
 
 ------------------------------------------------------------------------
 
-## 4. Privacy Rules
+# 3. Data Model
 
-Security is handled.
+## Product
 
-No sensitive data is searchable by Everyone.
+Fields:
 
-  ------------------------------------------------------------------------
-  Data Type                   Access             Condition
-  --------------------------- ------------------ -------------------------
-  Product                     Everyone           is_active = yes
+-   title (text)
+-   slug (text, unique)
+-   description (text)
+-   images (list of image)
+-   is_active (yes/no)
+-   featured (yes/no)
 
-  Variant                     Everyone           is_active = yes AND
-                                                 product.is_active = yes
-
-  Cart                        Owner only         owner = Current User
-
-  CartItem                    Owner only         cart.owner = Current User
-
-  Address                     Owner only         owner = Current User
-
-  Order                       Owner +            customer = Current User
-                              Admin/Staff        OR role is admin/staff
-
-  OrderItem                   Owner +            order.customer = Current
-                              Admin/Staff        User OR role is
-                                                 admin/staff
-
-  User                        Current User +     
-                              Admin              
-  ------------------------------------------------------------------------
-
-Important: nothing sensitive is globally searchable.
+Screenshot: ![Product Data Type
+Screenshot](./screenshots/product-data-type.png)
 
 ------------------------------------------------------------------------
 
-## 5. Pages Structure
+## Variant
 
-UI is intentionally simple.
+Each product can have multiple variants (SKU-level).
 
-  Page             Route                 Purpose
-  ---------------- --------------------- ------------------------------------
-  Shop             /shop                 List active products
-  Product          /p/:slug              Product detail + variant selection
-  Cart             /cart                 Manage cart
-  Checkout         /checkout             Create order
-  Orders           /account/orders       User order history
-  Order Detail     /account/orders/:id   Order details
-  Admin Products   /admin/products       Manage products and stock
-  Admin Orders     /admin/orders         Manage orders
+Fields:
+
+-   product (Product)
+-   sku (text, unique)
+-   name (text)
+-   price (number)
+-   compare_at_price (number, optional)
+-   stock_qty (number)
+-   is_active (yes/no)
+
+Screenshot: ![Variant Data Type
+Screenshot](./screenshots/variant-data-type.png)
 
 ------------------------------------------------------------------------
 
-## 6. Core Workflows
+## Cart
 
-### Cart - Add Item
+Fields:
 
-1.  If user is not logged in → redirect to login\
-2.  Find or create Cart\
-3.  If CartItem already exists → increment qty\
-4.  Otherwise create new CartItem\
+-   owner (User)
+-   items (list of CartItem)
+
+Screenshot: ![Cart Data Type
+Screenshot](./screenshots/cart-data-type.png)
+
+------------------------------------------------------------------------
+
+## CartItem
+
+Fields:
+
+-   cart (Cart)
+-   variant (Variant)
+-   qty (number)
+-   unit_price_snapshot (number)
+
+Screenshot: ![CartItem Data Type
+Screenshot](./screenshots/cartitem-data-type.png)
+
+------------------------------------------------------------------------
+
+## Address
+
+Fields:
+
+-   owner (User)
+-   label (text)
+-   zip (text)
+-   street (text)
+-   number (text)
+-   city (text)
+-   state (text)
+
+Screenshot: ![Address Data Type
+Screenshot](./screenshots/address-data-type.png)
+
+------------------------------------------------------------------------
+
+## Order
+
+Snapshot logic is used to preserve historical data.
+
+Fields:
+
+-   order_number (text)
+-   customer (User)
+-   status (OrderStatus)
+-   items (list of OrderItem)
+-   shipping_address_snapshot (text)
+-   subtotal (number)
+-   discount (number)
+-   shipping (number)
+-   total (number)
+-   payment_provider (text)
+-   payment_intent_id (text)
+-   created_at (date)
+
+Screenshot: ![Order Data Type
+Screenshot](./screenshots/order-data-type.png)
+
+------------------------------------------------------------------------
+
+## OrderItem
+
+Fields:
+
+-   order (Order)
+-   variant_snapshot (text)
+-   unit_price_snapshot (number)
+-   qty (number)
+-   subtotal (number)
+
+Screenshot: ![OrderItem Data Type
+Screenshot](./screenshots/orderitem-data-type.png)
+
+------------------------------------------------------------------------
+
+# 4. Privacy Rules
+
+Security rules implemented from the start.
+
+General principle:
+
+-   No sensitive data searchable by Everyone.
+-   Users can only access their own data.
+-   Admin/Staff have controlled elevated access.
+
+Screenshot: ![Privacy Rules Screenshot](./screenshots/privacy-rules.png)
+
+------------------------------------------------------------------------
+
+# 5. Pages Structure
+
+Routes implemented:
+
+-   /shop
+-   /p/:slug
+-   /cart
+-   /checkout
+-   /account/orders
+-   /account/orders/:id
+-   /admin/products
+-   /admin/orders
+
+Screenshot: ![Pages Structure
+Screenshot](./screenshots/pages-structure.png)
+
+------------------------------------------------------------------------
+
+# 6. Core Workflows
+
+## Cart - Add Item
+
+Steps:
+
+1.  If not logged in → redirect to login
+2.  Find or create Cart
+3.  If CartItem exists → increment qty
+4.  Else create CartItem
 5.  Validate qty \<= stock_qty
 
+Screenshot: ![Add to Cart Workflow
+Screenshot](./screenshots/workflow-add-to-cart.png)
+
 ------------------------------------------------------------------------
 
-### Checkout - Create Order
+## Checkout - Create Order
 
-1.  Validate address\
-2.  Revalidate stock for all items\
-3.  Create Order with status = pending_payment\
-4.  Create OrderItems with snapshots\
+Steps:
+
+1.  Validate address
+2.  Revalidate stock
+3.  Create Order (pending_payment)
+4.  Create OrderItems with snapshots
 5.  Calculate totals
 
+Screenshot: ![Checkout Workflow
+Screenshot](./screenshots/workflow-checkout.png)
+
 ------------------------------------------------------------------------
 
-### Payment Confirmation (V2)
+## Payment Confirmation (V2)
 
-1.  Confirm payment via webhook\
-2.  Set Order.status = paid\
-3.  Decrement stock_qty\
+Steps:
+
+1.  Confirm payment via webhook
+2.  Set Order.status = paid
+3.  Decrement stock_qty
 4.  Optional inventory log
 
-Stock is only decremented after payment confirmation.
+Screenshot: ![Payment Workflow
+Screenshot](./screenshots/workflow-payment.png)
 
 ------------------------------------------------------------------------
 
-## 7. Roadmap
+# 7. Roadmap
 
-### Phase 1 - MVP
+## Phase 1 - MVP
 
--   Data model defined\
--   Privacy rules implemented\
--   Catalog working\
--   Cart working\
--   Order creation flow\
+-   Data model
+-   Privacy rules
+-   Catalog
+-   Cart
+-   Order creation
 -   Basic admin panel
 
-------------------------------------------------------------------------
+## Phase 2 - Robust
 
-### Phase 2 - More Robust
-
--   Stripe integration\
--   Webhooks\
--   Coupon system\
--   Inventory movement log\
+-   Stripe integration
+-   Webhooks
+-   Coupon system
+-   Inventory log
 -   Email notifications
 
-------------------------------------------------------------------------
+## Phase 3 - Growth
 
-### Phase 3 - Growth
-
--   Guest cart\
--   Shipping calculation\
--   Reviews\
--   SEO improvements\
+-   Guest cart
+-   Shipping calculation
+-   Reviews
+-   SEO improvements
 -   Analytics dashboard
 
 ------------------------------------------------------------------------
