@@ -58,7 +58,7 @@ delivered\
 canceled\
 refunded
 
-## CouponType (optional)
+## CouponType
 
 percent\
 fixed
@@ -93,7 +93,7 @@ Fields:
 -   sku (text, unique)
 -   name (text)
 -   price (number)
--   compare_at_price (number, optional)
+-   compare_at_price (number)
 -   stock_qty (number)
 -   is_active (yes/no)
 
@@ -255,7 +255,7 @@ Steps:
 1.  Confirm payment via webhook
 2.  Set Order.status = paid
 3.  Decrement stock_qty
-4.  Optional inventory log
+4.  Inventory log
 
 Screenshot: ![Payment Workflow
 Screenshot](./screenshots/workflow-payment.png)
