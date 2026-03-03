@@ -237,7 +237,7 @@ Routes implemented:
 -   /admin/orders
 -   /login
 -   /signup
--   /reset-password
+-   /reset_pw
 
 Screenshot: ![Pages Structure
 Screenshot](./screenshots/pages-structure.png)
