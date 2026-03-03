@@ -209,6 +209,16 @@ General principle:
 -   Users can only access their own data.
 -   Admin/Staff have controlled elevated access.
 
+  ### Default Permissions Policy
+
+  For every Data Type, **"Everyone else (default permissions)" is always fully disabled**.
+
+  No fields are exposed by default.
+
+  Access is granted explicitly and only when strictly necessary, following the principle of least privilege.
+
+  Rules are defined intentionally per role and per ownership condition, and permissions are opened incrementally based on real functional requirements.
+
 Screenshot: ![Privacy Rules Screenshot](./screenshots/privacy-rules.png)
 
 ------------------------------------------------------------------------
