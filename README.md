@@ -145,6 +145,21 @@ Screenshot](./screenshots/address-data-type.png)
 
 ------------------------------------------------------------------------
 
+## User
+
+Additional Fields:
+
+-   role (UserRole)
+-   name (text)
+-   phone (text)
+-   is_blocked (yes/no)
+-   default_address (Address)
+
+Screenshot: ![User Data Type
+Screenshot](./screenshots/user-data-type.png)
+
+------------------------------------------------------------------------
+
 ## Order
 
 Snapshot logic is used to preserve historical data.
